@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Devis – Opti Clean</title>
+<style> @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+ :root {
+ --bg: #f2efeb;
+ --dark: #1f3b44;
+ --accent: #8fd3c7;
+ --white: #ffffff;
+ --gray: #6b7280;
+ --border: #d4cfc9;
+ }
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--dark); font-size: 13px; line-height: 1.6; }
+ .page { max-width: 860px; margin: 0 auto; background: var(--white); box-shadow: 0 4px 40px rgba(31,59,68,0.10); }
+
+ /*  CHAMPS EDITABLES  */
+ .editable {
+ background: transparent;
+ border: none;
+ border-bottom: 1.5px dashed var(--accent);
+ color: var(--dark);
+ font-family: 'Inter', sans-serif;
+ font-size: 13px;
+ font-weight: 600;
+ padding: 2px 6px;
+ width: 100%;
+ outline: none;
+ transition: border-color 0.2s, background 0.2s;
+ border-radius: 0;
+ }
+ .editable:focus {
+ background: rgba(143,211,199,0.12);
+ border-bottom: 2px solid var(--dark);
+ }
+ .editable::placeholder { color: #bbb; font-style: italic; font-weight: 400; }
+ select.editable { cursor: pointer; }
+ textarea.editable { resize: none; line-height: 1.6; padding: 4px 6px; border: 1.5px dashed var(--accent); border-radius: 4px; }
+ textarea.editable:focus { background: rgba(143,211,199,0.12); border: 2px solid var(--dark); }
+
+ /*  TOOLBAR  */
+ .toolbar {
+ position: sticky;
+ top: 0;
+ z-index: 100;
+ background: var(--dark);
+ padding: 10px 48px;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 12px;
+ box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+ }
+ .toolbar-left { display: flex; align-items: center; gap: 8px; }
+ .toolbar-left span { color: rgba(255,255,255,0.6); font-size: 11px; letter-spacing: 0.5px; }
+ .toolbar-left .dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+ @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+ .btn {
+ padding: 8px 18px;
+ border: none;
+ border-radius: 6px;
+ font-family: 'Inter', sans-serif;
+ font-size: 12px;
+ font-weight: 600;
+ cursor: pointer;
+ transition: opacity 0.2s, transform 0.1s;
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ letter-spacing: 0.3px;
+ }
+ .btn:hover { opacity: 0.88; }
+ .btn:active { transform: scale(0.97); }
+ .btn-reset { background: rgba(255,255,255,0.1); color: var(--white); }
+ .btn-pdf { background: var(--accent); color: var(--dark); }
+
+ /*  VALIDITY BANNER  */
+ .validity-banner { background: var(--accent); color: var(--dark); text-align: center; padding: 10px; font-size: 12px; font-weight: 600; }
+
+ /*  HEADER  */
+ .header { background: var(--dark); padding: 40px 48px 32px; display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+ .logo-area h1 { font-size: 28px; font-weight: 700; color: var(--white); letter-spacing: 1px; }
+ .logo-area .tagline { font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+ .devis-ref { text-align: right; }
+ .devis-ref .badge { background: var(--accent); color: var(--dark); font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 8px; }
+ .devis-ref p { color: rgba(255,255,255,0.75); font-size: 12px; }
+ .devis-ref .ref-num input { color: var(--white); font-size: 17px; font-weight: 600; width: 160px; text-align: right; }
+ .devis-ref input.editable, .devis-ref select.editable { color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 400; border-bottom-color: rgba(143,211,199,0.5); }
+ .devis-ref input.editable:focus, .devis-ref select.editable:focus { background: rgba(255,255,255,0.08); }
+ .accent-bar { height: 4px; background: linear-gradient(90deg, var(--accent) 0%, var(--dark) 100%); }
+
+ /*  PARTIES  */
+ .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-bottom: 1px solid var(--border); }
+ .partie { padding: 28px 48px; }
+ .partie:first-child { border-right: 1px solid var(--border); }
+ .partie-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--accent); display: inline-block; }
+ .partie h3 { font-size: 15px; font-weight: 700; color: var(--dark); margin-bottom: 10px; }
+ .partie .field-row { margin-bottom: 6px; }
+ .partie .field-row label { display: block; font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; }
+
+ /*  SECTIONS  */
+ .section { padding: 28px 48px; border-bottom: 1px solid var(--border); }
+ .section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+ .section-title .icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+ .section-title h2 { font-size: 14px; font-weight: 700; color: var(--dark); text-transform: uppercase; letter-spacing: 1px; }
+
+ /*  INFO GRID  */
+ .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+ .info-card { background: var(--bg); border-radius: 8px; padding: 12px 14px; border-left: 3px solid var(--accent); }
+ .info-card .label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); margin-bottom: 6px; display: block; }
+
+ /*  ZONES TABLE  */
+ .zones-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 16px; }
+ .zones-table thead tr { background: var(--dark); color: var(--white); }
+ .zones-table thead th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; }
+ .zones-table tbody tr:nth-child(even) { background: var(--bg); }
+ .zones-table tbody tr:nth-child(odd) { background: var(--white); }
+ .zones-table tbody td { padding: 8px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+ .zones-table .editable { font-weight: 400; font-size: 12px; }
+ .check-cell { text-align: center; }
+ input[type="checkbox"].zone-check {
+ width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer;
+ }
+
+ /*  PRESTATIONS  */
+ .prestation-block { margin-bottom: 20px; }
+ .prestation-block h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--dark); background: var(--bg); padding: 8px 14px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid var(--accent); }
+ .prestation-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+ .prestation-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; padding: 4px 0; }
+ .prestation-list li input[type="checkbox"] { accent-color: var(--accent); margin-top: 2px; flex-shrink: 0; width: 14px; height: 14px; cursor: pointer; }
+ .prestation-list li span { line-height: 1.4; }
+
+ /*  PLATFORM  */
+ .platform-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+ .platform-card { background: var(--dark); border-radius: 10px; padding: 16px 18px; color: var(--white); }
+ .platform-card .p-icon { font-size: 22px; margin-bottom: 8px; }
+ .platform-card h4 { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
+ .platform-card p { font-size: 11px; color: rgba(255,255,255,0.75); line-height: 1.5; }
+
+ /*  PRIX TABLE  */
+ .prix-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+ .prix-table thead tr { background: var(--dark); color: var(--white); }
+ .prix-table thead th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; }
+ .prix-table thead th:last-child { text-align: right; }
+ .prix-table tbody tr { border-bottom: 1px solid var(--border); }
+ .prix-table tbody tr:nth-child(even) { background: var(--bg); }
+ .prix-table tbody td { padding: 10px 16px; vertical-align: middle; }
+ .prix-table tbody td:last-child { text-align: right; font-weight: 600; }
+ .prix-table .editable { font-size: 13px; }
+ .subtotal-row td { background: var(--bg) !important; font-weight: 600; }
+ .tva-row td { font-size: 12px; color: var(--gray); padding: 8px 16px; }
+ .total-row td { background: var(--dark) !important; color: var(--white) !important; font-weight: 700 !important; padding: 14px 16px !important; }
+ .total-row .total-amt { color: var(--accent) !important; font-size: 16px !important; }
+ .total-row .editable { color: var(--accent); font-size: 16px; font-weight: 700; text-align: right; }
+ .prix-note { margin-top: 12px; font-size: 11px; color: var(--gray); background: var(--bg); padding: 10px 14px; border-radius: 6px; border-left: 3px solid var(--accent); }
+
+ /*  OPTIONS  */
+ .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+ .option-card { border: 1.5px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+ .option-card .o-icon { font-size: 24px; margin-bottom: 8px; }
+ .option-card h4 { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+ .option-card p { font-size: 11px; color: var(--gray); margin-bottom: 8px; }
+ .option-card .option-price { font-size: 13px; font-weight: 700; color: var(--accent); }
+
+ /*  CONDITIONS  */
+ .conditions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+ .condition-item { display: flex; gap: 10px; align-items: flex-start; }
+ .condition-item .c-icon { font-size: 18px; flex-shrink: 0; }
+ .condition-item h4 { font-size: 12px; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+ .condition-item p { font-size: 11px; color: var(--gray); line-height: 1.5; }
+ .mentions { margin-top: 16px; font-size: 11px; color: var(--gray); background: var(--bg); padding: 14px 16px; border-radius: 8px; line-height: 1.7; }
+
+ /*  SIGNATURE  */
+ .signature-section { background: var(--bg); padding: 32px 48px; border-top: 2px solid var(--border); }
+ .signature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 20px; }
+ .sig-block h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--dark); margin-bottom: 4px; }
+ .sig-block .sig-sub { font-size: 11px; color: var(--gray); margin-bottom: 16px; }
+ .sig-line { height: 1px; background: var(--dark); margin-bottom: 6px; margin-top: 50px; }
+ .sig-label { font-size: 10px; color: var(--gray); }
+ .acceptance-box { background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px 20px; font-size: 11px; color: var(--gray); line-height: 1.7; margin-bottom: 20px; }
+
+ /*  FOOTER  */
+ .footer { background: var(--dark); padding: 16px 48px; display: flex; justify-content: space-between; align-items: center; }
+ .footer p { color: rgba(255,255,255,0.6); font-size: 10px; }
+ .footer .footer-brand { color: var(--accent); font-weight: 700; font-size: 12px; letter-spacing: 1px; }
+
+ /*  PRINT  */
+ @media print {
+ .toolbar { display: none !important; }
+ body { background: white; }
+ .page { box-shadow: none; }
+ .editable { border-bottom: none !important; background: transparent !important; }
+ textarea.editable { border: none !important; }
+ }
+</style>
+</head>
+<body> <!-- TOOLBAR -->
+<div class="toolbar" id="toolbar"> <div class="toolbar-left"> <div class="dot"></div> <span> Mode édition actif — cliquez sur les champs pour remplir</span> </div> <div style="display:flex;gap:10px;"> <button class="btn btn-reset" onclick="resetForm()">🔄 Réinitialiser</button> <button class="btn btn-pdf" onclick="window.print()">🖨️ Imprimer / Exporter PDF</button> </div>
+</div> <div class="page"> <!-- VALIDITY --> <div class="validity-banner">⏳ Devis valable 30 jours à compter de la date d'émission</div> <!-- HEADER --> <div class="header"> <div class="logo-area"> <h1>OPTI CLEAN</h1> <div class="tagline">Solutions de nettoyage professionnel</div> </div> <div class="devis-ref"> <div class="badge">Devis</div> <div class="ref-num"> <input class="editable" id="ref_num" placeholder="OC-2026-001" style="color:var(--white);font-size:17px;font-weight:600;width:160px;text-align:right;" /> </div> <p>Émis le :&nbsp;<input class="editable" id="date_emission" type="date" style="color:rgba(255,255,255,0.9);font-size:12px;width:130px;text-align:right;background:transparent;border-bottom-color:rgba(143,211,199,0.5);" /></p> <p>Valable jusqu'au :&nbsp;<input class="editable" id="date_validite" type="date" style="color:rgba(255,255,255,0.9);font-size:12px;width:130px;text-align:right;background:transparent;border-bottom-color:rgba(143,211,199,0.5);" /></p> </div> </div> <div class="accent-bar"></div> <!-- 1. PARTIES --> <div class="parties"> <div class="partie"> <div class="partie-label">Prestataire</div> <h3>Opti Clean</h3> <div class="field-row"><label>Adresse</label><input class="editable" placeholder="12 Rue des Entrepreneurs, 31000 Toulouse" /></div> <div class="field-row"><label>Téléphone</label><input class="editable" placeholder="+33 5 XX XX XX XX" /></div> <div class="field-row"><label>Email</label><input class="editable" placeholder="contact@opticlean.fr" /></div> <div class="field-row"><label>RC / IF</label><input class="editable" placeholder="SIRET : XXX XXX XXX XXXXX" /></div> <div class="field-row"><label>ICE</label><input class="editable" placeholder="N° TVA : FR XX XXX XXX XXX" /></div> </div> <div class="partie"> <div class="partie-label">Client</div> <div class="field-row"><label>Société</label><input class="editable" id="client_nom" placeholder="Nom de la société" style="font-size:15px;font-weight:700;" /></div> <div class="field-row"><label>Adresse</label><input class="editable" placeholder="15 Allée Jean Jaurès, 31000 Toulouse" /></div> <div class="field-row"><label>Téléphone</label><input class="editable" placeholder="+33 6 XX XX XX XX" /></div> <div class="field-row"><label>Email</label><input class="editable" placeholder="contact@societe.fr" /></div> <div class="field-row"><label>Contact</label><input class="editable" placeholder="Prénom NOM" /></div> <div class="field-row"><label>RC / IF</label><input class="editable" placeholder="SIRET : XXX XXX XXX XXXXX" /></div> </div> </div> <!-- 2. DESCRIPTION DU SITE --> <div class="section"> <div class="section-title"><div class="icon"></div><h2>Description du site</h2></div> <div class="info-grid"> <div class="info-card"> <span class="label">Type de site</span> <select class="editable"> <option value="">— Sélectionner —</option> <option>Bureau</option> <option>Coworking</option> <option>Cabinet médical / juridique</option> <option>Copropriété</option> <option>Commerce / Boutique</option> <option>Entrepôt / Logistique</option> <option>Autre</option> </select> </div> <div class="info-card"> <span class="label">Superficie totale</span> <input class="editable" placeholder="Ex : 350 m²" /> </div> <div class="info-card"> <span class="label">Nombre de niveaux</span> <select class="editable"> <option value="">— Sélectionner —</option> <option>1 niveau</option> <option>2 niveaux</option> <option>3 niveaux</option> <option>4 niveaux</option> <option>5 niveaux et plus</option> </select> </div> </div> <table class="zones-table"> <thead><tr><th>Zone</th><th style="text-align:center;">Incluse</th><th>Superficie estimée</th><th>Commentaire</th></tr></thead> <tbody> <tr> <td>Open space / Bureaux</td> <td class="check-cell"><input type="checkbox" class="zone-check" checked /></td> <td><input class="editable" placeholder="Ex : 200 m²" /></td> <td><input class="editable" placeholder="Préciser..." /></td> </tr> <tr> <td>Sanitaires</td> <td class="check-cell"><input type="checkbox" class="zone-check" checked /></td> <td><input class="editable" placeholder="Ex : 25 m²" /></td> <td><input class="editable" placeholder="Préciser..." /></td> </tr> <tr> <td>Cuisine / Coin café</td> <td class="check-cell"><input type="checkbox" class="zone-check" checked /></td> <td><input class="editable" placeholder="Ex : 20 m²" /></td> <td><input class="editable" placeholder="Préciser..." /></td> </tr> <tr> <td>Salles de réunion</td> <td class="check-cell"><input type="checkbox" class="zone-check" /></td> <td><input class="editable" placeholder="Ex : 60 m²" /></td> <td><input class="editable" placeholder="Préciser..." /></td> </tr> <tr> <td>Parties communes / Couloirs</td> <td class="check-cell"><input type="checkbox" class="zone-check" /></td> <td><input class="editable" placeholder="Ex : 45 m²" /></td> <td><input class="editable" placeholder="Préciser..." /></td> </tr> <tr> <td><input class="editable" placeholder="Autre zone..." style="width:100%;border:none;background:transparent;font-family:inherit;font-size:inherit;color:inherit;" /></td> <td class="check-cell"><input type="checkbox" class="zone-check" /></td> <td><input class="editable" placeholder="Ex : 30 m²" /></td> <td><input class="editable" placeholder="Préciser..." /></td> </tr> </tbody> </table> </div> <!-- 3. FRÉQUENCE --> <div class="section"> <div class="section-title"><div class="icon"></div><h2>Fréquence &amp; Planning d'intervention</h2></div> <div class="info-grid"> <div class="info-card"> <span class="label">Fréquence</span> <select class="editable"> <option value="">— Sélectionner —</option> <option>1 fois / semaine</option> <option>2 fois / semaine</option> <option>3 fois / semaine</option> <option>5 fois / semaine (quotidien)</option> <option>2 fois / mois</option> <option>1 fois / mois</option> </select> </div> <div class="info-card"> <span class="label">Jours d'intervention</span> <input class="editable" placeholder="Ex : Lun / Mer / Ven" /> </div> <div class="info-card"> <span class="label">Horaires</span> <input class="editable" placeholder="Ex : 07h00 – 09h00" /> </div> <div class="info-card"> <span class="label">Durée par passage</span> <input class="editable" placeholder="Ex : 2 heures" /> </div> <div class="info-card"> <span class="label">Passages / mois (estimé)</span> <input class="editable" id="nb_passages" placeholder="Ex : 12 passages" /> </div> <div class="info-card"> <span class="label">Date de démarrage</span> <input class="editable" type="date" /> </div> </div> </div> <!-- 4. PRESTATIONS --> <div class="section"> <div class="section-title"><div class="icon"></div><h2>Prestations incluses</h2></div> <div class="prestation-block"> <h3>Nettoyage courant — Chaque passage</h3> <ul class="prestation-list"> <li><input type="checkbox" checked /><span>Aspiration et lavage des sols (toutes surfaces)</span></li> <li><input type="checkbox" checked /><span>Vidage et changement des sacs poubelles</span></li> <li><input type="checkbox" checked /><span>Dépoussiérage des surfaces accessibles</span></li> <li><input type="checkbox" checked /><span>Nettoyage et désinfection des sanitaires</span></li> <li><input type="checkbox" checked /><span>Nettoyage cuisine / coin café</span></li> <li><input type="checkbox" checked /><span>Essuyage des tables et bureaux</span></li> <li><input type="checkbox" checked /><span>Nettoyage vitres intérieures accessibles</span></li> <li><input type="checkbox" checked /><span>Remise en ordre des espaces communs</span></li> </ul> </div> <div class="prestation-block"> <h3>Entretien spécifique — Inclus au planning</h3> <ul class="prestation-list"> <li><input type="checkbox" checked /><span>Désinfection points de contact (poignées, interrupteurs)</span></li> <li><input type="checkbox" checked /><span>Nettoyage vitres accessibles (intérieur)</span></li> <li><input type="checkbox" /><span>Détartrage sanitaires (selon fréquence définie)</span></li> <li><input type="checkbox" /><span>Nettoyage des plinthes et angles</span></li> </ul> </div> <div class="prestation-block"> <h3>Méthodologie &amp; Qualité</h3> <ul class="prestation-list"> <li><input type="checkbox" checked /><span>Produits professionnels certifiés, adaptés à chaque surface</span></li> <li><input type="checkbox" checked /><span>Respect strict du protocole qualité Opti Clean</span></li> <li><input type="checkbox" checked /><span>Équipe formée et supervisée régulièrement</span></li> <li><input type="checkbox" checked /><span>Matériel professionnel fourni</span></li> <li><input type="checkbox" checked /><span>Fiche de passage complétée après chaque intervention</span></li> <li><input type="checkbox" /><span>Coordination avec le responsable site</span></li> </ul> </div> </div> <!-- 5. PLATEFORME --> <div class="section"> <div class="section-title"><div class="icon"></div><h2>Plateforme de suivi — Incluse</h2></div> <div style="margin-bottom:12px;font-size:12px;color:var(--gray);">Chaque client bénéficie d'un accès à notre plateforme de gestion des interventions, disponible 24h/24.</div> <div class="platform-grid"> <div class="platform-card"><div class="p-icon"></div><h4>Suivi en temps réel</h4><p>Validation des tâches effectuées à chaque passage, horodatée et accessible instantanément.</p></div> <div class="platform-card"><div class="p-icon"></div><h4>Historique complet</h4><p>Consultez l'intégralité des interventions passées, rapports et observations de l'équipe.</p></div> <div class="platform-card"><div class="p-icon"></div><h4>Remontée d'informations</h4><p>Signalez un problème ou une demande spéciale directement via l'interface client.</p></div> <div class="platform-card"><div class="p-icon"></div><h4>Rapports mensuels</h4><p>Synthèse automatique des passages, taux de complétion et recommandations qualité.</p></div> </div> </div> <!-- 6. PRIX --> <div class="section"> <div class="section-title"><div class="icon"></div><h2>Tarification</h2></div> <table class="prix-table"> <thead> <tr><th>Désignation</th><th>Fréquence</th><th>Qté / mois</th><th>P.U. HT</th><th>Montant HT</th></tr> </thead> <tbody> <tr> <td>Nettoyage courant (passage standard)</td> <td><input class="editable" placeholder="Ex : 3x / sem." style="width:90px;" /></td> <td><input class="editable" id="qte_passages" placeholder="12" style="width:60px;" oninput="calcTotal()" /></td> <td><input class="editable" id="pu_ht" placeholder="250 €" style="width:80px;" oninput="calcTotal()" /></td> <td><input class="editable" id="montant_ht_ligne" placeholder="3 000 €" style="width:90px;" /></td> </tr> <tr> <td>Entretien spécifique (désinfection, vitres…)</td> <td>Inclus</td><td>—</td><td>Inclus</td><td>—</td> </tr> <tr> <td>Accès plateforme de suivi</td> <td>Mensuel</td><td>—</td><td>Offert</td><td>—</td> </tr> <tr> <td>Fourniture produits & matériel</td> <td>Inclus</td><td>—</td><td>Inclus</td><td>—</td> </tr> <tr class="subtotal-row"> <td colspan="4">Sous-total HT / mois</td> <td><input class="editable" id="sous_total_ht" placeholder="3 000 €" style="width:100%;text-align:right;" /></td> </tr> <tr class="tva-row"> <td colspan="4">TVA (20%)</td> <td><input class="editable" id="montant_tva" placeholder="600 €" style="width:100%;text-align:right;" /></td> </tr> <tr class="total-row"> <td colspan="4" style="font-size:14px;">TOTAL TTC / MOIS</td> <td><input class="editable" id="total_ttc" placeholder="3 600 €" style="color:var(--accent);font-size:16px;font-weight:700;width:100%;text-align:right;border-bottom-color:rgba(143,211,199,0.4);" /></td> </tr> </tbody> </table> <div class="prix-note"> <strong>Soit environ <input class="editable" id="prix_passage" placeholder="250 € HT / passage" style="display:inline;width:160px;" /></strong> — Engagement 12 mois requis. Prix révisable annuellement selon l'IPC. </div> <div style="margin-top:20px;"> <div class="info-grid"> <div class="info-card"><span class="label">Engagement</span> <select class="editable"> <option>12 mois </option> <option>6 mois</option> <option>3 mois</option> <option>Sans engagement</option> </select> </div> <div class="info-card"><span class="label">Facturation</span> <select class="editable"> <option>Mensuelle</option> <option>Trimestrielle</option> <option>Annuelle</option> </select> </div> <div class="info-card"><span class="label">Délai de paiement</span> <select class="editable"> <option>30 jours fin de mois</option> <option>15 jours</option> <option>À réception</option> <option>60 jours</option> </select> </div> <div class="info-card"><span class="label">Mode de paiement</span> <select class="editable"> <option>Virement bancaire</option> <option>Chèque</option> <option>Espèces</option> <option>Virement / Chèque</option> </select> </div> <div class="info-card"><span class="label">Préavis résiliation</span><input class="editable" placeholder="1 mois (lettre RAR)" /></div> <div class="info-card"><span class="label">Révision tarifaire</span><input class="editable" placeholder="1 fois / an (IPC)" /></div> </div> </div> </div> <!-- 7. OPTIONS --> <div class="section"> <div class="section-title"><div class="icon"></div><h2>Options supplémentaires (hors devis)</h2></div> <div class="options-grid"> <div class="option-card"><div class="o-icon"></div><h4>Nettoyage vitres complet</h4><p>Vitres extérieures, façades et hauteur</p><div class="option-price"><input class="editable" placeholder="Sur devis" style="text-align:center;color:var(--accent);font-weight:700;" /></div></div> <div class="option-card"><div class="o-icon"></div><h4>Désinfection profonde</h4><p>Traitement virucide/bactéricide renforcé</p><div class="option-price"><input class="editable" placeholder="Sur devis" style="text-align:center;color:var(--accent);font-weight:700;" /></div></div> <div class="option-card"><div class="o-icon"></div><h4>Remise en état</h4><p>Post-travaux, déménagement, inauguration</p><div class="option-price"><input class="editable" placeholder="Sur devis" style="text-align:center;color:var(--accent);font-weight:700;" /></div></div> </div> </div> <!-- 8. CONDITIONS --> <div class="section"> <div class="section-title"><div class="icon"></div><h2>Conditions & Dispositions générales</h2></div> <div class="conditions-grid"> <div class="condition-item"><div class="c-icon"></div><div><h4>Accès au site</h4><p>Les accès nécessaires (clés, badges, codes) sont fournis par le client avant le démarrage des prestations.</p></div></div> <div class="condition-item"><div class="c-icon"></div><div><h4>Responsabilité</h4><p>Opti Clean est couvert par une assurance RC professionnelle souscrite en France. Toute dégradation constatée doit être signalée dans les 48h suivant l'intervention.</p></div></div> <div class="condition-item"><div class="c-icon"></div><div><h4>Prestations hors devis</h4><p>Toute prestation non prévue fera l'objet d'un avenant signé des deux parties avant exécution.</p></div></div> <div class="condition-item"><div class="c-icon"></div><div><h4>Révision tarifaire</h4><p>Révisable une fois par an, sur notification préalable de 30 jours, selon l'évolution de l'IPC.</p></div></div> <div class="condition-item"><div class="c-icon"></div><div><h4>Durée & Renouvellement</h4><p>Contrat de 12 mois, renouvelable tacitement. Résiliation avec préavis d'1 mois par lettre recommandée.</p></div></div> <div class="condition-item"><div class="c-icon"></div><div><h4>Retard de paiement</h4><p>Pénalités de retard au taux légal en vigueur (art. L.441-10 du Code de commerce), majorées d'une indemnité forfaitaire de 40 € pour frais de recouvrement.</p></div></div> </div> <div class="mentions"><strong>Note :</strong> Devis établi sur la base des informations communiquées par le client. Toute modification substantielle du périmètre peut entraîner une révision du tarif. Les prestations débutent à réception du devis signé.</div> </div> <!-- ENCADRÉ RECOMMANDATION -->
+<div style="background: #8fd3c7; border-radius: 10px; padding: 16px 20px; display: flex; align-items: flex-start; gap: 14px; margin: 24px 40px;">
+  <div style="flex-shrink:0; width:36px; height:36px; background: rgba(0,0,0,0.08); border-radius: 50%; display:flex; align-items:center; justify-content:center;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1f3b44" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  </div>
+  <p style="margin:0; color:#1f3b44; font-size:12px; line-height:1.6; font-style:italic;">
+    <strong style="font-style:normal; font-size:13px; display:block; margin-bottom:4px;">Opti Clean se développe essentiellement par recommandation.</strong>
+    Parce que la confiance se transmet, chaque mise en relation aboutissant à un contrat vous est restituée sous forme d'avantage tarifaire sur votre facturation. Contactez-nous pour en savoir plus.
+  </p>
+</div>
+
+<!-- 9. SIGNATURE --> <div class="signature-section"> <div class="section-title" style="margin-bottom:16px;"><div class="icon"></div><h2>Bon pour accord — Signature</h2></div> <div class="acceptance-box">
+      <div style="margin-bottom:10px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;line-height:2;">
+        En signant ce devis, le client
+        <input class="editable" id="display_client" placeholder="Nom et prénom du signataire" style="font-weight:700;color:var(--dark);font-size:12px;width:220px;display:inline-block;" />
+        , agissant au nom de
+        <input class="editable" id="display_societe" placeholder="Nom de la société" style="font-weight:700;color:var(--dark);font-size:12px;width:180px;display:inline-block;" />
+        , accepte l'ensemble des prestations, tarifs et conditions générales décrits dans le présent document, et s'engage pour une durée de <strong>12 mois</strong> à compter de la date de démarrage convenue.
+        La mention manuscrite <em>« Bon pour accord »</em> est requise.
+      </div>
+    </div> <div class="signature-grid"> <div class="sig-block"> <h4>Opti Clean — Prestataire</h4> <p class="sig-sub">Signature et cachet de la société</p> <div class="sig-line"></div> <p class="sig-label">Nom, qualité et date</p> </div> <div class="sig-block"> <h4>Client — Bon pour accord</h4> <p class="sig-sub">Mention manuscrite + signature + cachet</p> <div class="sig-line"></div> <p class="sig-label">Nom, qualité et date</p> </div> </div> </div> <!-- FOOTER --> <div class="footer"> <div class="footer-brand">OPTI CLEAN</div> <p>Solutions de nettoyage professionnel — contact@opticlean.fr</p> <p>Devis n° <span id="footer_ref">OC-2026-001</span></p> </div> </div> <script> // Sync client name in acceptance box
+ document.getElementById('client_nom').addEventListener('input', function() {
+ var val = this.value.trim();
+ document.getElementById('display_client').textContent = val || '_________________';
+ });
+
+ // Sync ref number in footer
+ document.getElementById('ref_num').addEventListener('input', function() {
+ document.getElementById('footer_ref').textContent = this.value || 'OC-2026-001';
+ });
+
+ // Auto-calculate totals
+ function calcTotal() {
+ var qte = parseFloat(document.getElementById('qte_passages').value) || 0;
+ var pu = parseFloat(document.getElementById('pu_ht').value.replace(/[^0-9.]/g,'')) || 0;
+ if (qte > 0 && pu > 0) {
+ var ht = qte * pu;
+ var tva = ht * 0.20;
+ var ttc = ht + tva;
+ document.getElementById('montant_ht_ligne').value = ht.toLocaleString('fr-FR') + ' €';
+ document.getElementById('sous_total_ht').value = ht.toLocaleString('fr-FR') + ' €';
+ document.getElementById('montant_tva').value = tva.toLocaleString('fr-FR') + ' €';
+ document.getElementById('total_ttc').value = ttc.toLocaleString('fr-FR') + ' €';
+ if (qte > 0) {
+ document.getElementById('prix_passage').value = pu.toLocaleString('fr-FR') + ' € HT / passage';
+ }
+ }
+ }
+
+ // Reset all fields
+ function resetForm() {
+ if (!confirm('Réinitialiser tous les champs ? Cette action est irréversible.')) return;
+ document.querySelectorAll('input.editable').forEach(function(el) {
+ if (el.type === 'checkbox') { el.checked = false; }
+ else { el.value = ''; }
+ });
+ document.querySelectorAll('select.editable').forEach(function(el) { el.selectedIndex = 0; });
+ document.querySelectorAll('textarea.editable').forEach(function(el) { el.value = ''; });
+ document.getElementById('display_client').textContent = '_________________';
+ document.getElementById('footer_ref').textContent = 'OC-2026-001';
+ }
+
+ // Set today's date by default
+ var today = new Date().toISOString().split('T')[0];
+ document.getElementById('date_emission').value = today;
+ var validity = new Date(); validity.setDate(validity.getDate() + 30);
+ document.getElementById('date_validite').value = validity.toISOString().split('T')[0];
+</script>
+</body>
+</html>
