@@ -158,10 +158,7 @@
  .remise-row { display: none; background: #fff5f5 !important; }
  .remise-row td { padding: 9px 16px; font-size: 13px; border-bottom: 1px solid #fecaca; vertical-align: middle; }
  .remise-row td:last-child { color: #e53e3e; font-weight: 700; text-align: right; }
- @media print {
-   .remise-check-row-hidden { display: none !important; }
-   .remise-row-hidden { display: none !important; }
- }
+ /* remise print rules merged into main @media print below */
  .tva-row td { font-size: 12px; color: var(--gray); padding: 8px 16px; }
  .total-row td { background: var(--dark) !important; color: var(--white) !important; font-weight: 700 !important; padding: 14px 16px !important; }
  .total-row .total-amt { color: var(--accent) !important; font-size: 16px !important; }
@@ -200,12 +197,103 @@
 
  /*  PRINT  */
  @media print {
+
+ /* ── UI chrome à masquer ──────────────────────────────────────── */
  .toolbar { display: none !important; }
  body { background: white; }
  .page { box-shadow: none; }
- .editable { border-bottom: none !important; background: transparent !important; }
- textarea.editable { border: none !important; }
+
+ /* ── Ligne remise : cachée si inactive, visible si active ────── */
+ .remise-check-row-hidden { display: none !important; }
+ .remise-row-hidden        { display: none !important; }
+ /* La ligne checkbox elle-même toujours masquée à l'impression   */
+ .remise-check-row { display: none !important; }
+
+ /* ── Problème 1 : Cases à cocher ─────────────────────────────── */
+ /* Masquer TOUTES les checkboxes visuellement en impression       */
+ input[type="checkbox"] { display: none !important; }
+
+ /* Remplacer les cochées par un ✓ textuel (via parent)           */
+ /* Prestations : masquer les li non cochés, ✓ sur les cochés     */
+ .prestation-list li:has(input[type="checkbox"]:not(:checked)) {
+   display: none !important;
  }
+ .prestation-list li:has(input[type="checkbox"]:checked)::before {
+   content: "✓ ";
+   color: #1f3b44;
+   font-weight: 700;
+   margin-right: 2px;
+ }
+
+ /* Zones table : masquer les tr non cochés, ✓ sur les cochés     */
+ .zones-table tbody tr:has(input.zone-check:not(:checked)) {
+   display: none !important;
+ }
+ .check-cell:has(input.zone-check:checked)::before {
+   content: "✓";
+   font-weight: 700;
+   color: #1f3b44;
+   font-size: 14px;
+ }
+
+ /* ── Problème 2 : Textes grisés invisibles en PDF ────────────── */
+ /* Forcer tous les champs éditables en noir opaque               */
+ input.editable,
+ textarea.editable,
+ select.editable,
+ input[class~="editable"],
+ [contenteditable] {
+   color: #000000 !important;
+   -webkit-text-fill-color: #000000 !important;
+   opacity: 1 !important;
+   background: transparent !important;
+   border-bottom: none !important;
+   border: none !important;
+ }
+ textarea.editable {
+   border: none !important;
+ }
+ /* Inputs en lecture seule (montants calculés) */
+ input[readonly] {
+   color: inherit !important;
+   -webkit-text-fill-color: inherit !important;
+   opacity: 1 !important;
+ }
+ /* Champ total TTC : garder la couleur accent */
+ #total_ttc {
+   color: #8fd3c7 !important;
+   -webkit-text-fill-color: #8fd3c7 !important;
+ }
+ /* Champ montant remise : garder rouge */
+ #montant_remise {
+   color: #e53e3e !important;
+   -webkit-text-fill-color: #e53e3e !important;
+ }
+
+ /* ── Problème 3 : Adresse tronquée en PDF ────────────────────── */
+ /* Adresse : l'input est remplacé par un div proxy au moment de l'impression
+    (via onbeforeprint/onafterprint dans le JS) — le CSS ci-dessous stylise ce div */
+ .print-address-proxy {
+   display: block;
+   width: 100%;
+   white-space: normal;
+   overflow: visible;
+   height: auto;
+   word-break: break-word;
+   font-family: 'Inter', sans-serif;
+   font-size: 13px;
+   font-weight: 600;
+   color: #000000 !important;
+   -webkit-text-fill-color: #000000 !important;
+   padding: 2px 6px;
+   line-height: 1.6;
+ }
+ /* Masquer les inputs adresse originaux à l'impression */
+ .field-row.has-proxy input.editable {
+   display: none !important;
+ }
+
+}
 </style>
 </head>
 <body> <!-- TOOLBAR -->
@@ -329,6 +417,66 @@
  document.getElementById('date_emission').value = today;
  var validity = new Date(); validity.setDate(validity.getDate() + 30);
  document.getElementById('date_validite').value = validity.toISOString().split('T')[0];
+
+ // ── Impression : remplacement des inputs adresse par des divs multilignes ──
+ function installAddressProxies() {
+   document.querySelectorAll('.field-row').forEach(function(row) {
+     var label = row.querySelector('label');
+     if (!label) return;
+     var labelText = label.textContent.trim().toLowerCase();
+     if (labelText !== 'adresse') return;
+     var input = row.querySelector('input.editable');
+     if (!input || input.dataset.hasProxy) return;
+     // Créer le div proxy
+     var proxy = document.createElement('div');
+     proxy.className = 'print-address-proxy';
+     proxy.textContent = input.value || input.placeholder || '';
+     proxy.dataset.proxyFor = 'address';
+     input.insertAdjacentElement('afterend', proxy);
+     input.dataset.hasProxy = '1';
+     row.classList.add('has-proxy');
+   });
+ }
+
+ function syncAddressProxies() {
+   document.querySelectorAll('.field-row.has-proxy').forEach(function(row) {
+     var input = row.querySelector('input.editable');
+     var proxy = row.querySelector('.print-address-proxy');
+     if (input && proxy) {
+       proxy.textContent = input.value || input.placeholder || '';
+     }
+   });
+ }
+
+ function removeAddressProxies() {
+   document.querySelectorAll('.print-address-proxy').forEach(function(el) { el.remove(); });
+   document.querySelectorAll('input[data-has-proxy]').forEach(function(el) { delete el.dataset.hasProxy; });
+   document.querySelectorAll('.field-row.has-proxy').forEach(function(el) { el.classList.remove('has-proxy'); });
+ }
+
+ // Installer les proxies dès le chargement (pour les inputs adresse)
+ // et les synchroniser à chaque saisie
+ window.addEventListener('DOMContentLoaded', function() {
+   installAddressProxies();
+   document.querySelectorAll('.field-row').forEach(function(row) {
+     var label = row.querySelector('label');
+     if (!label || label.textContent.trim().toLowerCase() !== 'adresse') return;
+     var input = row.querySelector('input.editable');
+     if (input) {
+       input.addEventListener('input', syncAddressProxies);
+       input.addEventListener('change', syncAddressProxies);
+     }
+   });
+ });
+
+ window.addEventListener('beforeprint', function() {
+   installAddressProxies();
+   syncAddressProxies();
+ });
+
+ window.addEventListener('afterprint', function() {
+   removeAddressProxies();
+ });
 </script>
 </body>
 </html>
