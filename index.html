@@ -217,6 +217,157 @@
  .footer p { color: rgba(255,255,255,0.6); font-size: 10px; }
  .footer .footer-brand { color: var(--accent); font-weight: 700; font-size: 12px; letter-spacing: 1px; }
 
+  /*  RESPONSIVE MOBILE  */
+ @media (max-width: 700px) {
+
+   /* ── Base & page ────────────────────────────────────────────── */
+   body { padding: 0; background: var(--white); }
+   .page { box-shadow: none; overflow-x: hidden; }
+
+   /* ── Toolbar ────────────────────────────────────────────────── */
+   .toolbar {
+     padding: 10px 14px;
+     flex-wrap: wrap;
+     gap: 8px;
+     position: relative;
+   }
+   .toolbar-left { font-size: 11px; flex: 1 1 100%; }
+   /* Le div inline avec les boutons */
+   .toolbar > div:last-child {
+     display: flex !important;
+     gap: 6px !important;
+     flex-wrap: wrap;
+     width: 100%;
+   }
+   .btn { font-size: 11px !important; padding: 7px 10px !important; flex: 1 1 auto; text-align: center; }
+
+   /* ── Header ─────────────────────────────────────────────────── */
+   .header {
+     padding: 20px 16px 16px;
+     flex-direction: column;
+     align-items: flex-start;
+     gap: 14px;
+   }
+   .logo-area svg { width: 140px !important; height: auto !important; }
+   .devis-ref { text-align: left; width: 100%; }
+   .devis-ref .ref-num input { font-size: 15px !important; width: 140px !important; text-align: left !important; }
+   .devis-ref input[type="date"] { width: 120px !important; font-size: 11px !important; }
+   .devis-ref p { font-size: 11px; }
+
+   /* ── Validity banner ────────────────────────────────────────── */
+   .validity-banner { font-size: 11px; padding: 8px 14px; }
+
+   /* ── Parties prestataire / client ───────────────────────────── */
+   .parties { grid-template-columns: 1fr; }
+   .partie {
+     border-right: none !important;
+     border-bottom: 1px solid var(--border);
+     padding: 16px !important;
+   }
+   .partie h3 { font-size: 14px; }
+   .partie .field-row label { font-size: 10px; }
+   .partie input.editable { font-size: 12px; width: 100% !important; }
+
+   /* ── Sections ───────────────────────────────────────────────── */
+   .section { padding: 18px 14px; }
+   .section-title { margin-bottom: 14px; }
+   .section-title h2 { font-size: 13px; }
+
+   /* ── Tableau zones : scroll horizontal ─────────────────────── */
+   .section > .zones-table,
+   .zones-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; font-size: 11px; }
+   .zones-table th, .zones-table td { padding: 6px 8px; white-space: nowrap; }
+   /* Masquer colonne Commentaire trop large */
+   .zones-table thead th:nth-child(4),
+   .zones-table tbody td:nth-child(4) { display: none; }
+
+   /* ── Tableau tarification : scroll horizontal ───────────────── */
+   .section > .prix-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+   .prix-table { font-size: 11px; min-width: 480px; }
+   .prix-table th, .prix-table td { padding: 7px 6px; }
+   .prix-table input.editable { font-size: 11px !important; }
+   .prix-note { font-size: 10px; }
+
+   /* ── Prestations : 1 colonne ────────────────────────────────── */
+   .prestation-list { grid-template-columns: 1fr !important; gap: 4px; }
+   .prestation-block { margin-bottom: 16px; }
+   .prestation-block h3 { font-size: 11px; }
+
+   /* ── Entretien spécifique : empiler les champs ──────────────── */
+   .prestation-list--entretien { gap: 10px !important; }
+   .prestation-list--entretien li {
+     display: flex !important;
+     flex-direction: column !important;
+     align-items: flex-start !important;
+     gap: 6px !important;
+     padding: 8px 0 !important;
+     border-bottom: 1px solid var(--border);
+   }
+   .prestation-list--entretien li > * { width: 100% !important; box-sizing: border-box; }
+   .prestation-list--entretien li > input[type="checkbox"] {
+     width: auto !important;
+     margin-bottom: 2px;
+   }
+   .prestation-list--entretien .conso-label { font-size: 13px; font-weight: 700; }
+   .prestation-list--entretien .conso-note { display: none !important; }
+
+   /* ── Consommables : empiler les champs ──────────────────────── */
+   .prestation-list--consommables { gap: 10px !important; }
+   .prestation-list--consommables li {
+     display: flex !important;
+     flex-direction: column !important;
+     align-items: flex-start !important;
+     gap: 6px !important;
+     padding: 8px 0 !important;
+     border-bottom: 1px solid var(--border);
+   }
+   .prestation-list--consommables li > * { width: 100% !important; box-sizing: border-box; }
+   .prestation-list--consommables li > input[type="checkbox"] {
+     width: auto !important;
+     margin-bottom: 2px;
+   }
+   .prestation-list--consommables .conso-label { font-size: 13px; font-weight: 700; }
+   .prestation-list--consommables .conso-note { display: none !important; }
+
+   /* ── Plateforme ─────────────────────────────────────────────── */
+   .platform-grid { grid-template-columns: 1fr !important; gap: 10px; }
+   .platform-card { padding: 14px; }
+
+   /* ── Remise ─────────────────────────────────────────────────── */
+   .remise-check-label { font-size: 11px; }
+   .remise-row td { padding: 8px 10px; font-size: 11px; }
+   #pct-remise { width: 60px !important; }
+
+   /* ── Section signature ──────────────────────────────────────── */
+   .signature-section { padding: 20px 14px; }
+   .acceptance-box {
+     font-size: 10px;
+     padding: 12px;
+     line-height: 1.6;
+   }
+   /* Inputs dans le texte d'acceptation passent sur leur propre ligne */
+   .acceptance-box > div {
+     flex-direction: column !important;
+     align-items: flex-start !important;
+   }
+   .acceptance-box input.editable {
+     width: 100% !important;
+     display: block !important;
+     margin: 4px 0 !important;
+   }
+   .signature-grid { max-width: 100% !important; }
+   .sig-block h4 { font-size: 11px; }
+
+   /* ── Footer ─────────────────────────────────────────────────── */
+   .footer {
+     padding: 16px 16px;
+     flex-direction: column !important;
+     align-items: flex-start;
+     gap: 4px;
+   }
+   .footer p { font-size: 10px; }
+ }
+
  /*  PRINT  */
  @media print {
 
@@ -372,7 +523,7 @@
         <input class="editable" id="display_societe" placeholder="Nom de la société" style="font-weight:700;color:var(--dark);font-size:12px;width:180px;display:inline-block;" />
         , accepte l'ensemble des prestations, tarifs et conditions générales décrits dans le présent document, et s'engage pour une durée de <strong>12 mois</strong> à compter de la date de démarrage convenue.
       </div>
-    </div> <div class="signature-grid" style="grid-template-columns: 1fr;max-width:50%;"> <div class="sig-block"> <h4>Client — Bon pour accord</h4> <p class="sig-sub">Signature + cachet</p> <div class="sig-line"></div> </div> </div> </div> <!-- FOOTER --> <div class="footer"> <div class="footer-brand">OPTI CLEAN</div> <p>Solutions de nettoyage professionnel — contact@opticlean.fr</p> <p>Devis n° <span id="footer_ref">OC-2026-001</span></p> </div> </div> <script> // Sync client name in acceptance box
+    </div> <div class="signature-grid" style="grid-template-columns: 1fr;max-width:50%;"> <div class="sig-block"> <h4>Client — Bon pour accord</h4> <p class="sig-sub">Signature + cachet</p> <div class="sig-line"></div> </div> </div> </div> <!-- FOOTER --> <div class="footer"> <div class="footer-brand">OPTI CLEAN</div> <p>Solutions de nettoyage professionnel — contact@opticlean.tech</p> <p>Devis n° <span id="footer_ref">OC-2026-001</span></p> </div> </div> <script> // Sync client name in acceptance box
  document.getElementById('client_nom').addEventListener('input', function() {
  var val = this.value.trim();
  document.getElementById('display_client').textContent = val || '_________________';
