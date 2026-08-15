@@ -819,7 +819,11 @@
  function applyGrilleTarifaire() {
    var sup  = parseMoneyToFloat(document.getElementById('superficie_totale').value);
    var freq = document.getElementById('freq_select').value || '';
-   if (!sup || !freq) return;
+   var tooltip = document.getElementById('tarif-tooltip');
+   if (!sup || !freq) {
+     if (tooltip) tooltip.textContent = '⚠️ Renseignez la superficie totale et la fréquence de passage (section Description du site) pour appliquer la grille tarifaire selon l’engagement.';
+     return;
+   }
 
    // ── Grilles tarifaires par engagement (montants mensuels HT, remises
    //    incluses). Source : Grilles_Tarifaires_OptiClean_3Formules (2026).
@@ -896,7 +900,10 @@
    for (var i = 0; i < TARIF.length; i++) {
      if (sup <= TARIF[i].max) { tranche = TARIF[i]; break; }
    }
-   if (!tranche) return; // superficie > 975m² : hors grille
+   if (!tranche) {
+     if (tooltip) tooltip.textContent = '⚠️ Superficie hors grille (> 975 m²) — tarif à définir manuellement.';
+     return; // superficie > 975m² : hors grille
+   }
 
    // ── Lire le montant mensuel directement dans le tableau ──────────────────
    var montantMensuel = tranche.montants[f.col];
