@@ -1228,15 +1228,15 @@
    } else {
      alertEl.classList.remove('visible');
    }
-   document.getElementById('contrat-date').value = new Date().toISOString().split('T')[0];
+   document.getElementById('contrat-numero').value = (document.getElementById('ref_num') || {}).value || 'OC-2026-001';
    document.getElementById('modal-contrat').classList.add('active');
  }
 
  function printContrat() {
    document.getElementById('modal-contrat').classList.remove('active');
 
-   var lieu    = document.getElementById('contrat-lieu').value.trim() || 'Blagnac';
-   var dateSig = document.getElementById('contrat-date').value;
+   var lieu    = 'Blagnac';
+   var dateSig = new Date().toISOString().split('T')[0];
 
    // ── Helpers ──────────────────────────────────────────────────────────────
    function g(id)  { var el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
@@ -1256,8 +1256,11 @@
    var ttc     = m(fn(g('total_ttc')),     'Total TTC');
    var tva     = fn(g('montant_tva'));
    var delai   = gs('select_delai_paiement') || '10 jours';
-   var ref     = g('ref_num') || 'OC-2026-001';
+   var ref     = g('contrat-numero') || g('ref_num') || 'OC-2026-001';
    var dSig    = dateSig ? fd(dateSig) : new Date().toLocaleDateString('fr-FR');
+   var remiseOn  = document.getElementById('checkbox-remise') && document.getElementById('checkbox-remise').checked;
+   var remisePct = remiseOn ? (parseFloat(g('pct-remise')) || 0) : 0;
+   var remiseMt  = g('montant_remise');
    var freq    = g('tarif_freq');
    var qte     = Math.round(parseFloat(g('qte_passages'))||0) || '\u2014';
    var pu      = fn(g('pu_ht'));
@@ -1392,6 +1395,7 @@
          + '<tr><td>Acc\u00e8s plateforme de suivi</td><td>Mensuel</td><td class="center">—</td><td class="center">Offert</td><td class="right">—</td></tr>'
          + '<tr><td>Fourniture produits et mat\u00e9riel</td><td>Inclus</td><td class="center">—</td><td class="center">Inclus</td><td class="right">—</td></tr>'
          + '<tr class="sub"><td colspan="4">Sous-total HT / mois</td><td class="right">' + stHT + '</td></tr>'
+         + (remisePct > 0 ? '<tr class="remise"><td colspan="4">Remise (' + remisePct + '\u00a0%)</td><td class="right">' + remiseMt + '</td></tr>' : '')
          + '<tr class="vat"><td colspan="4">TVA (20\u00a0%)</td><td class="right">' + tva + '</td></tr>'
          + '<tr class="tot"><td colspan="4">TOTAL TTC / MOIS</td><td class="right">' + ttc + '</td></tr>'
          + '</tbody></table>'
@@ -1469,6 +1473,7 @@
      'td{padding:6px 8px;border-bottom:1px solid var(--border);font-size:11px}',
      '.right{text-align:right}.center{text-align:center}',
      '.sub td{font-weight:700;background:var(--bg);-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+     '.remise td{color:#e53e3e;font-weight:700;font-size:10px}',
      '.vat td{color:var(--gray);font-size:10px}',
      '.tot td{background:var(--dark);color:var(--accent);font-weight:700;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
      /* Conditions */
@@ -1521,12 +1526,8 @@
      <h3>Générer le contrat PDF</h3>
      <div class="modal-alert" id="modal-alert"></div>
      <div class="modal-field">
-       <label>Fait à</label>
-       <input type="text" id="contrat-lieu" value="Blagnac" />
-     </div>
-     <div class="modal-field">
-       <label>Date de signature</label>
-       <input type="date" id="contrat-date" />
+       <label>Numéro de contrat</label>
+       <input type="text" id="contrat-numero" />
      </div>
      <div class="modal-actions">
        <button class="btn-contrat-cancel" onclick="document.getElementById('modal-contrat').classList.remove('active')">Annuler</button>
